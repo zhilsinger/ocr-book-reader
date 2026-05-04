@@ -1,0 +1,25 @@
+[package]
+name = "ocr_book_reader"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rinf = "7"
+# PDF rendering
+pdf = "0.9"
+# Image processing
+image = "0.25"
+# Tesseract FFI bindings
+leptess = "0.14"
+# JSON serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# File hashing
+sha2 = "0.10"
+# Logging
+log = "0.4"
+env_logger = "0.11"
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+# File paths
+walkdir = "2"
