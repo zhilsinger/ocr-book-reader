@@ -66,7 +66,9 @@ jobs:
           cache: true
 
       - name: Regenerate platform projects
-        run: flutter create --platforms android .
+        run: |
+          rm -rf android ios linux macos windows web
+          flutter create --platforms android --org com.ocrbookreader .
 
       - name: Flutter pub get
         run: flutter pub get
