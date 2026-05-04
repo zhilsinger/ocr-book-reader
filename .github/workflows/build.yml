@@ -61,32 +61,21 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
+          flutter-version: '3.19.6'
           channel: 'stable'
           cache: true
-
-      - name: Install Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'platforms;android-34 build-tools;34.0.0 platforms;android-33 build-tools;33.0.0 platform-tools cmdline-tools;latest'
-
-      - name: Configure Flutter for Android
-        run: |
-          flutter config --android-sdk $ANDROID_HOME
-          flutter doctor -v
-          yes | sdkmanager --licenses 2>/dev/null || true
 
       - name: Flutter pub get
         run: flutter pub get
 
       - name: Flutter analyze
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1 || echo "Analysis warnings — continuing"
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings || true
 
-      - name: Build APK (debug)
-        run: flutter build apk --debug
-
-      - name: Build APK (release)
-        run: flutter build apk --release
+      - name: Build APK
+        uses: nishaben/make-apk-action@v1
+        with:
+          project-dir: '.'
+          android-build-dir: 'android'
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
