@@ -77,9 +77,7 @@ jobs:
         run: flutter analyze --no-fatal-infos --no-fatal-warnings || true
 
       - name: Build APK (debug)
-        run: |
-          export ANDROID_SDK_ROOT=$ANDROID_HOME
-          flutter build apk --debug --verbose 2>&1 | tail -100
+        run: flutter build apk --debug
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
