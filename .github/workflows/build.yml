@@ -68,12 +68,13 @@ jobs:
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: 'platforms;android-34 build-tools;34.0.0 platforms;android-33 build-tools;33.0.0'
+          packages: 'platforms;android-34 build-tools;34.0.0 platforms;android-33 build-tools;33.0.0 platform-tools cmdline-tools;latest'
 
-      - name: Accept licenses & install cmdline-tools
+      - name: Configure Flutter for Android
         run: |
+          flutter config --android-sdk $ANDROID_HOME
+          flutter doctor -v
           yes | sdkmanager --licenses 2>/dev/null || true
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" 2>/dev/null || true
 
       - name: Flutter pub get
         run: flutter pub get
