@@ -79,7 +79,7 @@ jobs:
       - name: Build APK (debug)
         run: |
           export ANDROID_SDK_ROOT=$ANDROID_HOME
-          flutter build apk --debug
+          flutter build apk --debug --target-platform android-arm64
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
