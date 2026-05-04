@@ -3,6 +3,11 @@ name = "ocr_book_reader"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+# Full feature — enables OCR engine, PDF processor, and rinf messaging.
+# Requires external C libs: Tesseract (leptess), PDFium (pdf crate)
+full = []
+
 [dependencies]
 # Regex (used by text_cleaner)
 regex = "1"
