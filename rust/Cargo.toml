@@ -4,22 +4,20 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rinf = "7"
-# PDF rendering
-pdf = "0.9"
-# Image processing
-image = "0.25"
-# Tesseract FFI bindings
-leptess = "0.14"
+# Regex (used by text_cleaner)
+regex = "1"
 # JSON serialization
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-# File hashing
-sha2 = "0.10"
 # Logging
 log = "0.4"
 env_logger = "0.11"
-# Async runtime
-tokio = { version = "1", features = ["full"] }
-# File paths
-walkdir = "2"
+
+# Optional/placeholder deps (used when integrated with rinf)
+# rinf = "7"
+# leptess = "0.14"
+# pdf = "0.9"
+# image = "0.25"
+# sha2 = "0.10"
+# tokio = { version = "1", features = ["full"] }
+# walkdir = "2"
