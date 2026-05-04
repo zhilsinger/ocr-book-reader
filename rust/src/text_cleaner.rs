@@ -110,3 +110,40 @@ pub fn detect_chapters(text: &str) -> Vec<(usize, String, f32)> {
     }
     chapters
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_strips_page_numbers() {
+        let raw = "Chapter 1\n\nThe quick brown fox.\n\n42\n\nNext paragraph.";
+        let result = clean_text(raw, &[]);
+        assert!(!result.cleaned_text.contains("42"));
+        assert!(result.page_numbers_removed > 0);
+    }
+
+    #[test]
+    fn test_strips_headers() {
+        let headers = vec!["Journeys into the Bright World".to_string()];
+        let raw = "Journeys into the Bright World\n\nBody text here.\n\n15";
+        let result = clean_text(raw, &headers);
+        assert!(!result.cleaned_text.contains("Journeys"));
+        assert!(result.headers_removed > 0);
+    }
+
+    #[test]
+    fn test_fixes_hyphenated_words() {
+        let raw = "The quick brown fox jump-\ned over the lazy dog.";
+        let result = clean_text(raw, &[]);
+        assert!(result.cleaned_text.contains("jumped"));
+        assert!(result.hyphens_fixed > 0);
+    }
+
+    #[test]
+    fn test_detects_chapters() {
+        let text = "Some text\nChapter 1: The Beginning\nMore text\nChapter 2: The Middle\nEnd";
+        let ch = detect_chapters(text);
+        assert_eq!(ch.len(), 2);
+    }
+}

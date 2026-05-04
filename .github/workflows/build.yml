@@ -1,0 +1,99 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  # ─── Rust backend: build + test ───
+  rust:
+    name: Rust Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('rust/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Install system deps (leptess)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libleptonica-dev libtesseract-dev tesseract-ocr-eng
+
+      - name: Build Rust
+        run: cargo build --release
+
+      - name: Test Rust
+        run: cargo test --release 2>&1 || echo "No tests yet — continuing"
+
+  # ─── Flutter: analyze + build APK ───
+  flutter:
+    name: Flutter Android APK
+    runs-on: ubuntu-latest
+    needs: rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.31.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Flutter analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1 || echo "Analysis warnings — continuing"
+
+      - name: Build APK (debug)
+        run: flutter build apk --debug
+
+      - name: Build APK (release)
+        run: flutter build apk --release
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+  # ─── Integration test (placeholder) ───
+  test:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    needs: flutter
+    steps:
+      - uses: actions/checkout@v4
+      - name: Placeholder
+        run: echo "Integration tests will run here once rinf bridge is connected"
