@@ -52,13 +52,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.22.0'
           channel: 'stable'
           cache: true
-          cache-key: flutter-:os:-:channel:-:version:
 
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
@@ -98,3 +103,47 @@ jobs:
       - uses: actions/checkout@v4
       - name: Placeholder
         run: echo "Integration tests will run here once rinf bridge is connected"
+
+  # ─── Emulator APK smoke test ───
+  emulator-test:
+    name: Emulator Smoke Test
+    runs-on: ubuntu-latest
+    needs: flutter
+    if: success()
+    strategy:
+      matrix:
+        api-level: [30]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download debug APK
+        uses: actions/download-artifact@v4
+        with:
+          name: app-debug
+          path: ./apk
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          ls -la /dev/kvm || echo "KVM not available on this runner"
+
+      - name: Run on Android Emulator
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          script: |
+            adb wait-for-device
+            adb install apk/app-debug.apk
+            adb shell am start -n com.ocrbookreader.app/.MainActivity
+            sleep 10
+            adb exec-out screencap -p > screenshot.png
+
+      - name: Upload screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: emulator-screenshot-api${{ matrix.api-level }}
+          path: screenshot.png
+          retention-days: 7

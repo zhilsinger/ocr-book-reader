@@ -4,17 +4,14 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: ^3.5.0
-  flutter: '>=3.24.0'
+  sdk: ^3.4.0
+  flutter: '>=3.22.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  rinf: ^7.0.0
   file_picker: ^8.0.0
   path_provider: ^2.1.0
-  permission_handler: ^11.0.0
-  share_plus: ^10.0.0
 
 dev_dependencies:
   flutter_test:
