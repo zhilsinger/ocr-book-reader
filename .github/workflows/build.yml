@@ -68,7 +68,7 @@ jobs:
       - name: Regenerate platform projects
         run: |
           rm -rf android ios linux macos windows web
-          flutter create --platforms android --org com.ocrbookreader .
+          flutter create --platforms android --org com.ocrbookreader --project-name ocrbookreader .
 
       - name: Flutter pub get
         run: flutter pub get
