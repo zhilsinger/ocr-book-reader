@@ -42,7 +42,7 @@ jobs:
         run: cargo build --release
 
       - name: Test Rust
-        run: cargo test --release 2>&1 || echo "No tests yet — continuing"
+        run: cargo test --release || (echo "Tests failed — check output above" && false)
 
   # ─── Flutter: analyze + build APK ───
   flutter:
@@ -74,7 +74,7 @@ jobs:
         run: flutter pub get
 
       - name: Flutter analyze
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings || true
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Build APK (debug)
         run: |
